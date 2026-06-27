@@ -1,0 +1,69 @@
+========================================================================
+                 PHASE 3: SAFE STRING INPUT & FORMATTING
+========================================================================
+
+5. Why snprintf() is safer than sprintf()
+------------------------------------------------------------------------
+* sprintf(buf, "format", ...): 
+  Blindsides your program by writing data into a buffer without tracking 
+  how large that buffer actually is. If the formatted output is larger 
+  than the destination array, it causes a critical buffer overflow.
+
+* snprintf(buf, size, "format", ...): 
+  Requires you to explicitly pass the maximum size of the buffer. 
+  ✅ SAFE: It will never write more than 'size - 1' characters, and it 
+  GUARANTEES that a null terminator (\0) is appended at the very end. 
+  Any extra data that doesn't fit is simply truncated safely.
+
+
+6. What toupper() does and why it's useful for symbols
+------------------------------------------------------------------------
+* toupper(char c): 
+  A function from <ctype.h> that takes a single character and returns its 
+  uppercase equivalent if it is a lowercase letter. If it's already 
+  uppercase or a symbol/number, it leaves it completely unchanged.
+
+* Why it's useful for financial tickers/symbols:
+  Users frequently type inputs in mixed or lowercase formats (e.g., "nvda" 
+  or "Aapl"). Market databases expect standard uppercase tickers ("NVDA"). 
+  Processing input through toupper() in a loop normalizes the data 
+  instantly, ensuring string comparisons (strcmp) do not fail due to case 
+  mismatches.
+
+
+7. Difference between fgets() and scanf() for strings
+------------------------------------------------------------------------
+* scanf("%s", buf):
+  - Stops reading input the absolute second it encounters any whitespace 
+    (spaces, tabs, newlines). This makes it impossible to read multi-word 
+    strings (like "Apple Inc.").
+  - ⚠️ DANGER: By default, it doesn't respect buffer boundaries, easily 
+    causing overflows unless explicitly constrained (like %19s).
+
+* fgets(buf, sizeof(buf), stdin):
+  - ✅ SAFE: It strictly limits reading to the buffer size you provide, 
+    preventing any possibility of a buffer overflow.
+  - It reads the entire line, including spaces, stopping only when it 
+    hits a newline character ('\n') or the maximum size limit. 
+  - ⚠️ NOTE: It retains the trailing '\n' in the buffer, which you 
+    usually want to strip out manually before using the string.
+
+
+8. Format specifiers: %-8s and %10.2f
+------------------------------------------------------------------------
+These formatting tokens allow you to build perfectly aligned terminal tables:
+
+* %-8s (Left-Align String):
+  - The `s` specifies a string.
+  - The `8` sets a fixed-width block of 8 characters.
+  - The minus sign `-` forces the text to be **left-aligned** within that block. 
+    If the string is shorter than 8 characters, it pads the right side with spaces.
+
+* %10.2f (Right-Align Float/Double):
+  - The `f` specifies a floating-point number.
+  - The `10` sets a total structural width of 10 characters for the entire field 
+    (including the decimal point and digits).
+  - The `.2` restricts the output to exactly 2 decimal places.
+  - No minus sign means it defaults to **right-aligned**, shifting spaces 
+    to the left side—perfect for alignment of currency and numeric columns.
+========================================================================
