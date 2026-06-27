@@ -1,0 +1,70 @@
+========================================================================
+                     PHASE 3: ARRAYS & STRINGS NOTES
+========================================================================
+
+1. Difference between strcpy and strncpy
+------------------------------------------------------------------------
+* strcpy(dest, src): 
+  Copies the entire source string into the destination buffer until it 
+  hits the null terminator (\0). 
+  ⚠️ DANGER: If the source string is longer than the destination buffer, 
+  it will overwrite adjacent memory. This causes a "buffer overflow" 
+  vulnerability or crashes your program.
+
+* strncpy(dest, src, n): 
+  Copies up to 'n' characters from the source string. 
+  ✅ SAFE: It prevents buffer overflows by strictly limiting how many 
+  bytes can be written.
+  ⚠️ NOTE: If the source string is longer than or equal to 'n', strncpy 
+  will NOT automatically append a null terminator (\0) at the end. You 
+  must manually set dest[n-1] = '\0' to guarantee safety.
+
+
+2. Why strcmp returns 0 when strings match
+------------------------------------------------------------------------
+* strcmp() works by comparing strings character-by-character based on 
+  their ASCII value subtractive differences (char1 - char2).
+* It iterates through both strings simultaneously:
+  - If it finds a character where String A > String B, it returns a 
+    positive number (> 0).
+  - If it finds a character where String A < String B, it returns a 
+    negative number (< 0).
+* When two strings match exactly, every single pair of characters is identical. 
+  When it reaches the end, it subtracts the final null terminators:
+    '\0' - '\0' => 0 - 0 = 0
+* Therefore, a return value of 0 explicitly signifies "Zero Difference."
+
+
+3. What the null terminator (\0) does
+------------------------------------------------------------------------
+* In C, strings are not a built-in primitive data type; they are simply 
+  sequences of characters stored in sequential memory addresses (arrays).
+* Because an array doesn't inherently "know" its own length, C needs a way 
+  to mark where a string actually ends. 
+* The null terminator ('\0', ASCII value 0) serves as the standard "stop sign."
+* Functions like printf("%s"), strlen(), and strcmp() read memory one byte 
+  at a time and keep moving forward until they stumble upon '\0'.
+* Without a null terminator, functions will leak past your string and print 
+  or process garbage data residing next to it in random memory.
+
+
+4. How 2D arrays store strings (char array[rows][cols])
+------------------------------------------------------------------------
+* A 2D char array represents a grid or a list of strings, defined as:
+  char list[rows][cols];
+
+* 'rows': Represents the TOTAL NUMBER of strings you can store.
+* 'cols': Represents the MAXIMUM LENGTH (including the '\0') each 
+  individual string can be.
+
+* Memory Layout:
+  In hardware memory, this is stored as a continuous flat block, row by row. 
+  For example, char stocks[3][5] = {"AAPL", "NVDA", "MSFT"}; looks like this:
+
+  Row 0 (stocks[0]): |  A  |  A  |  P  |  L  | \0  |
+  Row 1 (stocks[1]): |  N  |  V  |  D  |  A  | \0  |
+  Row 2 (stocks[2]): |  M  |  S  |  F  |  T  | \0  |
+
+* When you pass `stocks[1]` to a function like printf or strcmp, you are 
+  passing a pointer to the start of the second row, which reads "NVDA".
+========================================================================
